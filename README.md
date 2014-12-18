@@ -6,7 +6,7 @@ Grab a screenshot of a website, defining your own pixelratio. Uses phantomjs.
 
 ## Installation
 
-* Install PhantomJS, from ![here](http://phantomjs.org/download.html)
+* Install PhantomJS, from [here](http://phantomjs.org/download.html)
 * Download this repository
 * Run `phantomjs pixelratio.js [url] [file] [pixelRatio]`
 
