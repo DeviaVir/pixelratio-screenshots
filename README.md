@@ -6,7 +6,7 @@ Grab a screenshot of a website, defining your own pixelratio. Uses phantomjs.
 
 ## Installation
 
-* Install PhantomJS, from [here](http://phantomjs.org/download.html)
+* Install PhantomJS v2.0.0, from [here](http://phantomjs.org/download.html)
 * Download this repository
 * Run `phantomjs pixelratio.js [url] [file] [pixelRatio]`
 
@@ -27,7 +27,7 @@ Lastly, the default viewport is "1440x900", I multiply this by the pixelRatio, a
 ## Examples
 
 Example: `phantomjs pixelratio.js https://www.github.com/ ~/Desktop/github.png 2`
-![github](https://cloud.githubusercontent.com/assets/777823/5494082/196f797c-86f1-11e4-81e6-fb8513ffe894.png)
+![github](https://cloud.githubusercontent.com/assets/777823/7681610/cf3798a6-fd71-11e4-8f36-2ab4e86d8847.png)
 
-Example: `phantomjs pixelratio.js https://maps.google.com/ ~/Desktop/maps.png 2`
-![maps](https://cloud.githubusercontent.com/assets/777823/5494089/226c686e-86f1-11e4-9340-9efbed795418.png)
+Example: `phantomjs pixelratio.js http://tweakers.net ~/Desktop/tweakers.png 2`
+![maps](https://cloud.githubusercontent.com/assets/777823/7681813/80839974-fd73-11e4-82ed-e09e4f68c760.png)

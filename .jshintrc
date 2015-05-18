@@ -1,0 +1,22 @@
+{
+  "node": true,
+  "browser": false,
+  "maxcomplexity": 10,
+  "curly": true,
+  "laxcomma": true,
+  "laxbreak": true,
+  "strict": false,
+  "quotmark": false,
+  "undef": true,
+  "unused": "vars",
+  "sub": true,
+  "expr": true,
+  "-W043": true,
+  "predef": [
+    "phantom",
+    "window",
+    "document",
+    "screen",
+    "-Promise"
+  ]
+}

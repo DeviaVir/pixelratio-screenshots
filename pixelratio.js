@@ -1,14 +1,18 @@
-var page = require('webpage').create(),
-	address, output, pixelRatio, width, height;
+'use strict';
 
-if (phantom.args.length < 3 || phantom.args.length > 4) {
+var page = require('webpage').create(),
+    system = require('system'),
+	address, output, pixelRatio, width, height, blockJs;
+
+var args = Array.prototype.slice.call(system.args, 1);
+if (args.length < 3 || args.length > 4) {
     console.log('Usage: pixelratio.js URL filename pixelRatio');
     phantom.exit();
 }
 
-address = phantom.args[0];
-output = phantom.args[1];
-pixelRatio = phantom.args[2];
+address = args[0];
+output = args[1];
+pixelRatio = args[2];
 blockJs = true;
 
 page.onConsoleMessage = function(msg) {
@@ -28,6 +32,13 @@ page.onResourceRequested = function(requestData, networkRequest) {
             blockJs = false;
         }
     }
+
+    var reqUrl = requestData.url;
+    var newUrl = requestData.url.split(',%20')[0];
+
+    if (newUrl != reqUrl) {
+      networkRequest.changeUrl(newUrl);
+    }
 };
 
 width = (1440*pixelRatio);
@@ -35,9 +46,11 @@ height = (900*pixelRatio);
 
 page.viewportSize = { width: width, height: height };
 page.settings.localToRemoteUrlAccessEnabled = true;
+page.settings.userAgent = 'Mozilla/5.0 (Windows NT 5.1; rv:8.0) Gecko/20100101 Firefox/7.0';
+
 page.open(address, function (status) {
     if (status !== 'success') {
-        console.log('Unable to load the address!');
+        console.log('Unable to load the address!', address, status);
         phantom.exit();
     } else {
         // Manipulate the DOM
@@ -72,7 +85,7 @@ page.open(address, function (status) {
                 });
             }
             var _phantomAll = document.getElementsByTagName("script");
-            for (_phantomIndex = _phantomAll.length - 1; _phantomIndex >= 0; _phantomIndex--) {
+            for (var _phantomIndex = _phantomAll.length - 1; _phantomIndex >= 0; _phantomIndex--) {
                 _phantomAll[_phantomIndex].parentNode.removeChild(_phantomAll[_phantomIndex]);
             }
             if(urls.length > 0) {
@@ -85,7 +98,6 @@ page.open(address, function (status) {
                 });
             }
             if(_phantomReexecute.length > 0) {
-                var _phantomBody = document.getElementsByTagName("body")[0];
                 _phantomReexecute.forEach(function(s) {
                     var _phantomScript = document.createElement("script");
                     _phantomScript.type = "text/javascript";
@@ -111,6 +123,7 @@ page.open(address, function (status) {
         // Make the screenshot
         window.setTimeout(function () {
             page.render(output);
+            page.release();
             phantom.exit();
         }, 3500);
     }
