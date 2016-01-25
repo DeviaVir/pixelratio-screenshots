@@ -2,7 +2,7 @@
 
 var page = require('webpage').create(),
     system = require('system'),
-	address, output, pixelRatio, width, height, blockJs;
+	address, output, pixelRatio, width, height;
 
 var args = Array.prototype.slice.call(system.args, 1);
 if (args.length < 3 || args.length > 4) {
@@ -13,7 +13,6 @@ if (args.length < 3 || args.length > 4) {
 address = args[0];
 output = args[1];
 pixelRatio = args[2];
-blockJs = true;
 
 page.onConsoleMessage = function(msg) {
     console.log(msg);
@@ -22,14 +21,11 @@ page.onConsoleMessage = function(msg) {
 // Here we block the first (few) requests until we have set the correct window variables
 var resources = [];
 page.onResourceRequested = function(requestData, networkRequest) {
-    if(blockJs === true && (requestData.url.match(/\.js/g) !== null || requestData.url.match(/\/js\//g) !== null)) {
-        if(requestData.url.match(/_phantomLoadMe/g) === null) {
+    if((requestData.url.match(/\.js/g) !== null || requestData.url.match(/\/js\//g) !== null)) {
+        if(requestData.url.match(/_phantomLoadMe/g) === null && requestData.url.match(/typekit/gi) === null) {
             console.log('Temporarily blocking too soon request to ', requestData['url']);
             resources.push(requestData['url']);
             networkRequest.abort();
-        }
-        else {
-            blockJs = false;
         }
     }
 
@@ -76,7 +72,7 @@ page.open(address, function (status) {
             _phantomScripts = Array.prototype.slice.call(_phantomScripts);
             if(_phantomScripts.length > 0) {
                 _phantomScripts.forEach(function(v) {
-                    if('src' in v && v.src !== "") {
+                    if('src' in v && v.src !== "" && v.src.match(/typekit/gi) === null) {
                         urls.push(v.src);
                     }
                     else {
@@ -86,10 +82,12 @@ page.open(address, function (status) {
             }
             var _phantomAll = document.getElementsByTagName("script");
             for (var _phantomIndex = _phantomAll.length - 1; _phantomIndex >= 0; _phantomIndex--) {
-                _phantomAll[_phantomIndex].parentNode.removeChild(_phantomAll[_phantomIndex]);
+                if(_phantomAll[_phantomIndex].src.match(/typekit/gi) === null) {
+                    _phantomAll[_phantomIndex].parentNode.removeChild(_phantomAll[_phantomIndex]);
+                }
             }
+            var _phantomHead = document.getElementsByTagName("head")[0];
             if(urls.length > 0) {
-                var _phantomHead = document.getElementsByTagName("head")[0];
                 urls.forEach(function(u) {
                     var _phantomScript = document.createElement("script");
                     _phantomScript.type = "text/javascript";
@@ -102,6 +100,7 @@ page.open(address, function (status) {
                     var _phantomScript = document.createElement("script");
                     _phantomScript.type = "text/javascript";
                     _phantomScript.innerHTML = s.script;
+                    _phantomHead.appendChild(_phantomScript); 
                 });
             }
 
@@ -125,6 +124,6 @@ page.open(address, function (status) {
             page.render(output);
             page.release();
             phantom.exit();
-        }, 3500);
+        }, 5000);
     }
 });
